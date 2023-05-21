@@ -1,0 +1,21 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recipewebsite
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      name: RecipeWb
+  template:
+    metadata:
+      labels:
+        name: RecipeWb
+    spec:
+      containers:
+      - name: application
+        image: leo600/sdog6recipeservice:latest
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8080
