@@ -4,6 +4,6 @@ COPY go.* ./
 RUN go mod download
 COPY . ./
 RUN go build -o main .
-ENV port=8080
-EXPOSE 8080
+ENV port=9000
+EXPOSE 9000
 CMD ["go", "run", "main.go"]
