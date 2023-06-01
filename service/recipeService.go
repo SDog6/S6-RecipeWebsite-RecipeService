@@ -50,6 +50,7 @@ func GetAllRecipes(c *gin.Context) {
 	// Check if the users are already cached
 	if cachedRecipies, found := recipeCache.Get("recipies"); found {
 		// If the users are cached, return the cached data
+		log.Println("From the cache")
 		c.JSON(http.StatusOK, RecipeResponse{Recipies: cachedRecipies.([]model.RecipePost)})
 		return
 	}
