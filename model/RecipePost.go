@@ -5,11 +5,12 @@ import (
 )
 
 type RecipePost struct {
-	ID           int64
-	AuthorID     int64
-	Title        string
-	Description  string
-	Ingredients  string
-	Instructions string
-	CreatedAt    time.Time
+	ID          int64        `json:"id"`
+	Author      string     `json:"author"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	Ingredients string     `json:"ingredients"`
+	Instructions string    `json:"instructions"`
+	CreatedAt   *time.Time `json:"created_at"`
 }
+

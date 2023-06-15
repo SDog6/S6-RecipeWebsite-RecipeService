@@ -28,8 +28,8 @@ func CreateRecipe(c *gin.Context) {
 		log.Fatal("(RegisterUser) c.BindJSON", err)
 	}
 
-	query := `INSERT INTO RecipePost (AuthorID,Title,Description,Ingredients,Instructions) VALUES (?,?,?,?,?)`
-	res, err := db.Exec(query, recipe.AuthorID, recipe.Title, recipe.Description, recipe.Ingredients, recipe.Instructions)
+	query := `INSERT INTO RecipePost (Author,Title,Description,Ingredients,Instructions) VALUES (?,?,?,?,?)`
+	res, err := db.Exec(query, recipe.Author, recipe.Title, recipe.Description, recipe.Ingredients, recipe.Instructions)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -67,7 +67,7 @@ func GetAllRecipes(c *gin.Context) {
 	recipies := []model.RecipePost{}
 	for res.Next() {
 		var recipe model.RecipePost
-		err := res.Scan(&recipe.ID, &recipe.AuthorID, &recipe.Title, &recipe.Description, &recipe.Ingredients, &recipe.Instructions, &recipe.CreatedAt)
+		err := res.Scan(&recipe.ID, &recipe.Author, &recipe.Title, &recipe.Description, &recipe.Ingredients, &recipe.Instructions, &recipe.CreatedAt)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -81,3 +81,35 @@ func GetAllRecipes(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 }
+
+func GetRecipeByID(c *gin.Context) {
+
+	type RecipeResponse struct {
+		Recipe model.RecipePost `json:"recipe"`
+	}
+
+	db := dbaccess.ConnectToDb()
+
+	// Get the recipe ID from the request parameters
+	recipeID := c.Param("id")
+
+	query := "SELECT * FROM RecipePost WHERE ID = ?"
+	res, err := db.Query(query, recipeID)
+	defer res.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var recipe model.RecipePost
+	if res.Next() {
+		err := res.Scan(&recipe.ID, &recipe.Author, &recipe.Title, &recipe.Description, &recipe.Ingredients, &recipe.Instructions, &recipe.CreatedAt)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	response := RecipeResponse{Recipe: recipe}
+
+	c.JSON(http.StatusOK, response)
+}
+

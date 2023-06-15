@@ -11,10 +11,7 @@ func main() {
 
 	router.POST("/CraeteRecipe", service.CreateRecipe)
 	router.GET("/Recipies", service.GetAllRecipes)
-	// router.GET("/products", GetProducts)
-	// router.GET("/products/:productId", GetSingleProduct)
-	// router.PUT("/products/:productId", UpdateProduct)
-	// router.DELETE("/products/:productId", DeleteProduct)
+	router.GET("/SingleRecipe", service.GetRecipeByID)
 
 	// Run the router
 	router.Run(":9000")
