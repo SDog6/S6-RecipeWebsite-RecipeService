@@ -9,6 +9,7 @@ type RecipePost struct {
 	Author      string     `json:"author"`
 	Title       string     `json:"title"`
 	Description string     `json:"description"`
+	Picture string     `json:"picture"`
 	Ingredients string     `json:"ingredients"`
 	Instructions string    `json:"instructions"`
 	CreatedAt   *time.Time `json:"created_at"`

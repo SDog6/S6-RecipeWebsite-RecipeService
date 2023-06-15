@@ -28,8 +28,8 @@ func CreateRecipe(c *gin.Context) {
 		log.Fatal("(RegisterUser) c.BindJSON", err)
 	}
 
-	query := `INSERT INTO RecipePost (Author,Title,Description,Ingredients,Instructions) VALUES (?,?,?,?,?)`
-	res, err := db.Exec(query, recipe.Author, recipe.Title, recipe.Description, recipe.Ingredients, recipe.Instructions)
+	query := `INSERT INTO RecipePost (Author,Title,Description,Picture,Ingredients,Instructions) VALUES (?,?,?,?,?,?)`
+	res, err := db.Exec(query, recipe.Author, recipe.Title, recipe.Description, recipe.Picture, recipe.Ingredients, recipe.Instructions)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -67,7 +67,7 @@ func GetAllRecipes(c *gin.Context) {
 	recipies := []model.RecipePost{}
 	for res.Next() {
 		var recipe model.RecipePost
-		err := res.Scan(&recipe.ID, &recipe.Author, &recipe.Title, &recipe.Description, &recipe.Ingredients, &recipe.Instructions, &recipe.CreatedAt)
+		err := res.Scan(&recipe.ID, &recipe.Author, &recipe.Title, &recipe.Description, &recipe.Picture,&recipe.Ingredients, &recipe.Instructions, &recipe.CreatedAt)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -102,7 +102,7 @@ func GetRecipeByID(c *gin.Context) {
 
 	var recipe model.RecipePost
 	if res.Next() {
-		err := res.Scan(&recipe.ID, &recipe.Author, &recipe.Title, &recipe.Description, &recipe.Ingredients, &recipe.Instructions, &recipe.CreatedAt)
+		err := res.Scan(&recipe.ID, &recipe.Author, &recipe.Title, &recipe.Description, &recipe.Picture,&recipe.Ingredients, &recipe.Instructions, &recipe.CreatedAt)
 		if err != nil {
 			log.Fatal(err)
 		}
