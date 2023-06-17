@@ -92,7 +92,7 @@ func GetRecipeByID(c *gin.Context) {
 
 // Get the recipe ID from the request body
 var requestBody struct {
-	ID string `json:"id"`
+	ID int64 `json:"id"`
 }
 
 if err := c.ShouldBindJSON(&requestBody); err != nil {
