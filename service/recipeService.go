@@ -84,6 +84,10 @@ func GetAllRecipes(c *gin.Context) {
 
 func GetRecipeByID(c *gin.Context) {
 
+	type RecipeResponse struct {
+		Recipies model.RecipePost `json:"recipies"`
+	}
+
 	db := dbaccess.ConnectToDb()
 
 // Get the recipe ID from the request body
