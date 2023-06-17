@@ -115,7 +115,7 @@ if res.Next() {
 	}
 }
 
-response := RecipeResponse{Recipe: recipe}
+response := RecipeResponse{Recipies: recipe}
 
 c.JSON(http.StatusOK, response)
 
