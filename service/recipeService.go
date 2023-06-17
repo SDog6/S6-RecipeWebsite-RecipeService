@@ -82,34 +82,35 @@ func GetAllRecipes(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func GetRecipeByID(c *gin.Context) {
+db := dbaccess.ConnectToDb()
 
-	type RecipeResponse struct {
-		Recipe model.RecipePost `json:"recipe"`
-	}
+// Get the recipe ID from the request body
+var requestBody struct {
+	ID string `json:"id"`
+}
 
-	db := dbaccess.ConnectToDb()
+if err := c.ShouldBindJSON(&requestBody); err != nil {
+	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	return
+}
 
-	// Get the recipe ID from the request parameters
-	recipeID := c.Param("id")
+query := "SELECT * FROM RecipePost WHERE ID = ?"
+res, err := db.Query(query, requestBody.ID)
+defer res.Close()
+if err != nil {
+	log.Fatal(err)
+}
 
-	query := "SELECT * FROM RecipePost WHERE ID = ?"
-	res, err := db.Query(query, recipeID)
-	defer res.Close()
+var recipe model.RecipePost
+if res.Next() {
+	err := res.Scan(&recipe.ID, &recipe.Author, &recipe.Title, &recipe.Description, &recipe.Picture,&recipe.Ingredients, &recipe.Instructions, &recipe.CreatedAt)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	var recipe model.RecipePost
-	if res.Next() {
-		err := res.Scan(&recipe.ID, &recipe.Author, &recipe.Title, &recipe.Description, &recipe.Picture,&recipe.Ingredients, &recipe.Instructions, &recipe.CreatedAt)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-
-	response := RecipeResponse{Recipe: recipe}
-
-	c.JSON(http.StatusOK, response)
 }
+
+response := RecipeResponse{Recipe: recipe}
+
+c.JSON(http.StatusOK, response)
+
 
