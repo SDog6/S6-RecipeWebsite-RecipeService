@@ -13,7 +13,7 @@ import (
 	cache "github.com/patrickmn/go-cache"
 )
 
-var recipeCache = cache.New(5*time.Minute, 10*time.Minute)
+var recipeCache *cache.Cache
 
 func init() {
 	// Initialize the cache with a default expiration time of 5 minutes
