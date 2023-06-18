@@ -11,7 +11,7 @@ func main() {
 
 	router.POST("/CraeteRecipe", service.CreateRecipe)
 	router.GET("/Recipies", service.GetAllRecipes)
-	router.GET("/SingleRecipe", service.GetRecipeByID)
+	router.POST("/SingleRecipe", service.GetRecipeByID)
 
 	// Run the router
 	router.Run(":9000")
