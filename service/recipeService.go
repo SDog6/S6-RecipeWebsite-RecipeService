@@ -13,7 +13,7 @@ import (
 	cache "github.com/patrickmn/go-cache"
 )
 
-var recipeCache *cache.Cache
+var recipeCache = cache.New(5*time.Minute, 10*time.Minute)
 
 func init() {
 	// Initialize the cache with a default expiration time of 5 minutes
@@ -57,6 +57,7 @@ func GetAllRecipes(c *gin.Context, table string) {
 	}
 
 	db := dbaccess.ConnectToDb()
+	defer db.Close()
 
 	query := fmt.Sprintf("SELECT * FROM %s", table)
 	res, err := db.Query(query)
