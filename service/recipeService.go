@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"recipeServiceApp/dbaccess"
 	"recipeServiceApp/model"
 	"time"
@@ -19,7 +20,7 @@ func init() {
 	recipeCache = cache.New(5*time.Minute, 10*time.Minute)
 }
 
-func CreateRecipe(c *gin.Context) {
+func CreateRecipe(c *gin.Context, table string) {
 	db := dbaccess.ConnectToDb()
 
 	var recipe model.RecipePost
@@ -28,7 +29,7 @@ func CreateRecipe(c *gin.Context) {
 		log.Fatal("(RegisterUser) c.BindJSON", err)
 	}
 
-	query := `INSERT INTO RecipePost (Author,Title,Description,Picture,Ingredients,Instructions) VALUES (?,?,?,?,?,?)`
+	query := fmt.Sprintf(`INSERT INTO %s (Author,Title,Description,Picture,Ingredients,Instructions) VALUES (?,?,?,?,?,?)`, table)
 	res, err := db.Exec(query, recipe.Author, recipe.Title, recipe.Description, recipe.Picture, recipe.Ingredients, recipe.Instructions)
 	if err != nil {
 		log.Fatal(err)
@@ -41,7 +42,7 @@ func CreateRecipe(c *gin.Context) {
 	c.JSON(http.StatusOK, recipe)
 }
 
-func GetAllRecipes(c *gin.Context) {
+func GetAllRecipes(c *gin.Context, table string) {
 
 	type RecipeResponse struct {
 		Recipies []model.RecipePost `json:"recipies"`
@@ -57,7 +58,7 @@ func GetAllRecipes(c *gin.Context) {
 
 	db := dbaccess.ConnectToDb()
 
-	query := "SELECT * FROM RecipePost"
+	query := fmt.Sprintf("SELECT * FROM %s", table)
 	res, err := db.Query(query)
 	defer res.Close()
 	if err != nil {
@@ -67,7 +68,7 @@ func GetAllRecipes(c *gin.Context) {
 	recipies := []model.RecipePost{}
 	for res.Next() {
 		var recipe model.RecipePost
-		err := res.Scan(&recipe.ID, &recipe.Author, &recipe.Title, &recipe.Description, &recipe.Picture,&recipe.Ingredients, &recipe.Instructions, &recipe.CreatedAt)
+		err := res.Scan(&recipe.ID, &recipe.Author, &recipe.Title, &recipe.Description, &recipe.Picture, &recipe.Ingredients, &recipe.Instructions, &recipe.CreatedAt)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -82,7 +83,7 @@ func GetAllRecipes(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func GetRecipeByID(c *gin.Context) {
+func GetRecipeByID(c *gin.Context, table string) {
 
 	type RecipeResponse struct {
 		Recipies model.RecipePost `json:"recipies"`
@@ -90,34 +91,33 @@ func GetRecipeByID(c *gin.Context) {
 
 	db := dbaccess.ConnectToDb()
 
-// Get the recipe ID from the request body
-var requestBody struct {
-	ID int64 `json:"id"`
-}
+	// Get the recipe ID from the request body
+	var requestBody struct {
+		ID int64 `json:"id"`
+	}
 
-if err := c.ShouldBindJSON(&requestBody); err != nil {
-	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	return
-}
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-query := "SELECT * FROM RecipePost WHERE ID = ?"
-res, err := db.Query(query, requestBody.ID)
-defer res.Close()
-if err != nil {
-	log.Fatal(err)
-}
-
-var recipe model.RecipePost
-if res.Next() {
-	err := res.Scan(&recipe.ID, &recipe.Author, &recipe.Title, &recipe.Description, &recipe.Picture,&recipe.Ingredients, &recipe.Instructions, &recipe.CreatedAt)
+	query := fmt.Sprintf("SELECT * FROM %s WHERE ID = ?", table)
+	res, err := db.Query(query, requestBody.ID)
+	defer res.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	var recipe model.RecipePost
+	if res.Next() {
+		err := res.Scan(&recipe.ID, &recipe.Author, &recipe.Title, &recipe.Description, &recipe.Picture, &recipe.Ingredients, &recipe.Instructions, &recipe.CreatedAt)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	response := RecipeResponse{Recipies: recipe}
+
+	c.JSON(http.StatusOK, response)
+
 }
-
-response := RecipeResponse{Recipies: recipe}
-
-c.JSON(http.StatusOK, response)
-
-}
-

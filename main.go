@@ -9,9 +9,16 @@ import (
 func main() {
 	router := gin.Default()
 
-	router.POST("/CraeteRecipe", service.CreateRecipe)
-	router.GET("/Recipies", service.GetAllRecipes)
-	router.POST("/SingleRecipe", service.GetRecipeByID)
+	recipeTable := "RecipePost"
+	router.POST("/CraeteRecipe", func(c *gin.Context) {
+		service.CreateRecipe(c, recipeTable)
+	})
+	router.GET("/Recipies", func(c *gin.Context) {
+		service.GetAllRecipes(c, recipeTable)
+	})
+	router.POST("/SingleRecipe", func(c *gin.Context) {
+		service.GetRecipeByID(c, recipeTable)
+	})
 
 	// Run the router
 	router.Run(":9000")

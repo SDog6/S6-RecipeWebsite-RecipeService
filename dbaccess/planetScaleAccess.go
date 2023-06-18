@@ -3,19 +3,12 @@ package dbaccess
 import (
 	"database/sql"
 	"log"
-	"os"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 )
 
 func ConnectToDb() *sql.DB {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("failed to load env", err)
-	}
-
-	db, err := sql.Open("mysql", os.Getenv("DSN"))
+	db, err := sql.Open("mysql", "wi1r1ff35xssfgt34lt7:pscale_pw_FZOQYetVkUt7hLRrt3ALIti7iUPmqcJfy1kHIJ3m08H@tcp(aws.connect.psdb.cloud)/recipedb?tls=true&parseTime=true")
 	if err != nil {
 		log.Fatalf("failed to connect: %v", err)
 	}
